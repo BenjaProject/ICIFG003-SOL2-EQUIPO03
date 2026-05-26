@@ -1,0 +1,61 @@
+/*Visualizacion en aplicacion*/ 
+header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 15px 30px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+footer {
+  background-color: #34495e;
+  color: #ecf0f1;
+  text-align: center;
+  padding: 15px;
+  margin-top: 30px;
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 25px;
+  padding: 20px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.catalog-section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.promotions-sidebar {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.promo-box {
+  background-color: #ffeaa7;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  color: #2d3436;
+}
+
+@media (max-width: 1023px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+  }
+  
+
+  .promotions-sidebar {
+    grid-row: 2; 
+  }
+}
