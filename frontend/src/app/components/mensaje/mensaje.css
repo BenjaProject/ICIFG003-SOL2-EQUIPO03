@@ -1,0 +1,14 @@
+.top-banner {
+  background-color: #27ae60;
+  color: white;
+  text-align: center;
+  padding: 8px 0;
+  font-weight: bold;
+  font-size: 0.9rem;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.top-banner p {
+  margin: 0;
+}
