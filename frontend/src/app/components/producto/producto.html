@@ -1,1 +1,14 @@
-<p>producto works!</p>
+<div class="cards-container">
+  
+  @for (item of listaProductos; track item.id) {
+    <article class="product-card">
+      <div class="image-placeholder">{{ item.textoImg }}</div>
+      <div class="product-info">
+        <h3>{{ item.nombre }}</h3>
+        <p class="price">${{ item.precio }}</p>
+        <button class="btn-add">Super botonsito de compra</button>
+      </div>
+    </article>
+  }
+
+</div>
