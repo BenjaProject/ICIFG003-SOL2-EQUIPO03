@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CarritoServiceImpl implements CarritoService {
@@ -76,33 +77,44 @@ public class CarritoServiceImpl implements CarritoService {
     @Transactional
     public Carrito agregarProducto(Long idProducto, Integer cantidad) {
         Carrito carrito = obtenerCarritoActivo();
+    
+    // 1. Buscamos el producto en la base de datos para verificar su stock real actual
         Producto producto = productoRepository.findById(idProducto)
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + idProducto));
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        if (carrito.getItems() == null) {
-            carrito.setItems(new ArrayList<>());
+    // 2. REGLA DE ORO: Verificamos si hay suficiente stock físico en la base de datos
+        if (producto.getStock() < cantidad) {
+            throw new IllegalArgumentException("No hay suficiente stock. Solamente quedan " + producto.getStock() + " unidades en bodega.");
         }
 
-        DetalleCarrito existente = carrito.getItems().stream()
-                .filter(item -> item.getProducto() != null
-                        && item.getProducto().getIdProducto().equals(idProducto))
-                .findFirst()
-                .orElse(null);
+    // 3. RESTAMOS EL STOCK EN LA BASE DE DATOS: El producto reduce su inventario inmediatamente
+        producto.setStock(producto.getStock() - cantidad);
+        productoRepository.save(producto); // Actualiza la tabla 'producto' en PostgreSQL
 
-        if (existente != null) {
-            existente.setCantidad(existente.getCantidad() + cantidad);
-            detalleCarritoRepository.save(existente);
-        } else {
+    // 4. Gestionamos el item dentro del carrito
+        Optional<DetalleCarrito> detalleExistente = carrito.getItems().stream()
+                .filter(item -> item.getProducto().getIdProducto().equals(idProducto))
+                .findFirst();
+
+        if (detalleExistente.isPresent()) {
+        // Si el producto ya estaba en el carrito, solo incrementamos su cantidad
+            DetalleCarrito detalle = detalleExistente.get();
+            detalle.setCantidad(detalle.getCantidad() + cantidad);
+            detalleCarritoRepository.save(detalle);
+        } 
+        else {
+        // Si es la primera vez que entra al carrito, creamos el detalle desde cero
             DetalleCarrito nuevoDetalle = DetalleCarrito.builder()
                     .carrito(carrito)
                     .producto(producto)
                     .cantidad(cantidad)
-                    .precioUnitario(producto.getPrecio())
+                    .precioUnitario(producto.getPrecio()) // Congelamos el precio de venta actual
                     .build();
+        
             detalleCarritoRepository.save(nuevoDetalle);
             carrito.getItems().add(nuevoDetalle);
         }
 
-        return carritoRepository.save(carrito);
+        return carrito;
     }
 }
