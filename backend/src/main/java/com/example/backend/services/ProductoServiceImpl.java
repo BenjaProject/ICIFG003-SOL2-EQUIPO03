@@ -14,7 +14,11 @@ public class ProductoServiceImpl implements ProductoService{
     @Autowired
     private ProductoRepository productoRepository;
     @Override
-    public List<Producto> findAll() {
+    public List<Producto> findAll(Long idCategoria) {
+
+        if (idCategoria != null) {
+            return productoRepository.findByCategoriaIdCategoria(idCategoria);
+        }
         return productoRepository.findAll();
     }
 

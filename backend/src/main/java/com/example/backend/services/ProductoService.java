@@ -6,7 +6,7 @@ import com.example.backend.models.Producto;
 
 public interface ProductoService {
 
-    List<Producto>findAll();
+    List<Producto>findAll(Long idCategoria);
     Producto findById(Long id);
     Producto save(Producto producto);
     Producto update(Long id, Producto producto);
