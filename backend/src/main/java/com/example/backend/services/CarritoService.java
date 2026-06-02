@@ -8,4 +8,6 @@ public interface CarritoService {
     Carrito guardar(Carrito carrito);
     Carrito actualizar(Long id, Carrito carrito);
     void eliminar(Long id);
+    Carrito obtenerCarritoActivo();
+    Carrito agregarProducto(Long idProducto, Integer cantidad);
 }
