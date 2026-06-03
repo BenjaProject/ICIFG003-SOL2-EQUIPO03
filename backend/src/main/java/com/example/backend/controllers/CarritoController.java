@@ -54,4 +54,17 @@ public class CarritoController {
             @RequestParam(defaultValue = "1") Integer cantidad) {
         return ResponseEntity.ok(carritoService.agregarProducto(idProducto, cantidad));
     }
+
+
+    @DeleteMapping("/eliminar")
+    public ResponseEntity<Carrito> eliminarProducto(@RequestParam Long idProducto) {
+        Carrito carritoActualizado = carritoService.eliminarProducto(idProducto);
+        return ResponseEntity.ok(carritoActualizado);
+    }
+
+    @DeleteMapping("/vaciar")
+    public ResponseEntity<Carrito> vaciarCarrito() {
+        Carrito carritoVacio = carritoService.vaciarCarrito();
+        return ResponseEntity.ok(carritoVacio);
+}
 }

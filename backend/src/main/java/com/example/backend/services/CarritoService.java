@@ -10,4 +10,6 @@ public interface CarritoService {
     void eliminar(Long id);
     Carrito obtenerCarritoActivo();
     Carrito agregarProducto(Long idProducto, Integer cantidad);
+    Carrito eliminarProducto(Long idProducto);
+    Carrito vaciarCarrito();
 }

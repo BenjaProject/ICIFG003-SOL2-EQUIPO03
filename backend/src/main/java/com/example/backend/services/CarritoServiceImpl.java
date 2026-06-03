@@ -78,16 +78,16 @@ public class CarritoServiceImpl implements CarritoService {
     public Carrito agregarProducto(Long idProducto, Integer cantidad) {
         Carrito carrito = obtenerCarritoActivo();
     
-    // 1. Buscamos el producto en la base de datos para verificar su stock real actual
+    //Buscamos el producto en la base de datos para verificar su stock real actual
         Producto producto = productoRepository.findById(idProducto)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-    // 2. REGLA DE ORO: Verificamos si hay suficiente stock físico en la base de datos
+    //Verificamos si hay suficiente stock físico en la base de datos
         if (producto.getStock() < cantidad) {
             throw new IllegalArgumentException("No hay suficiente stock. Solamente quedan " + producto.getStock() + " unidades en bodega.");
         }
 
-    // 3. RESTAMOS EL STOCK EN LA BASE DE DATOS: El producto reduce su inventario inmediatamente
+    //RESTAMOS EL STOCK EN LA BASE DE DATOS: El producto reduce su inventario inmediatamente
         producto.setStock(producto.getStock() - cantidad);
         productoRepository.save(producto); // Actualiza la tabla 'producto' en PostgreSQL
 
@@ -116,5 +116,38 @@ public class CarritoServiceImpl implements CarritoService {
         }
 
         return carrito;
+    }
+
+    @Override
+    @Transactional
+    public Carrito eliminarProducto(Long idProducto) {
+        Carrito carrito = obtenerCarritoActivo();
+        DetalleCarrito detalle = carrito.getItems().stream().
+            filter(item -> item.getProducto().getIdProducto().equals(idProducto))
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("El producto no está en el carrito"));
+
+        Producto producto = detalle.getProducto();
+        producto.setStock(producto.getStock() + detalle.getCantidad());
+        productoRepository.save(producto);
+
+        carrito.getItems().remove(detalle);
+        detalleCarritoRepository.delete(detalle);
+
+        return carritoRepository.save(carrito);
+    }
+    
+    @Override
+    @Transactional
+    public Carrito vaciarCarrito() {
+        Carrito carrito = obtenerCarritoActivo();
+        for (DetalleCarrito detalle : carrito.getItems()) {
+            Producto producto = detalle.getProducto();
+            producto.setStock(producto.getStock() + detalle.getCantidad());
+            productoRepository.save(producto);
+        }
+        detalleCarritoRepository.deleteAll(carrito.getItems());
+        carrito.getItems().clear();
+        return carritoRepository.save(carrito);
     }
 }
