@@ -20,3 +20,10 @@
   background-color: #34495e;
   color: #ffeaa7;
 }
+
+@media (max-width: 767px) {
+  .nav-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

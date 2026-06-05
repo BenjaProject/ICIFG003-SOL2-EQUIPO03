@@ -1,14 +1,26 @@
+@if (loading()) {
+  <p class="status-text">Cargando catalogo...</p>
+}
+
+@if (error()) {
+  <p class="status-text error">{{ error() }}</p>
+}
+
 <div class="cards-container">
-  
-  @for (item of listaProductos; track item.id) {
+  @for (item of productos(); track item.idProducto) {
     <article class="product-card">
-      <div class="image-placeholder">{{ item.textoImg }}</div>
+      <img
+        class="product-image"
+        [src]="item.imagenUrl || placeholderImage"
+        [alt]="item.nombreProducto"
+        loading="lazy"
+      />
       <div class="product-info">
-        <h3>{{ item.nombre }}</h3>
+        <h3>{{ item.nombreProducto }}</h3>
+        <p class="category">{{ item.categoria?.nombreCategoria }}</p>
         <p class="price">${{ item.precio }}</p>
-        <button class="btn-add">Super botonsito de compra</button>
+        <button class="btn-add">Agregar al carrito</button>
       </div>
     </article>
   }
-
 </div>

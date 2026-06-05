@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+
+import { CategoriaProductoStore } from '../../services/categoria-producto.store';
+import { ProductoStore } from '../../services/producto.store';
 
 @Component({
   selector: 'app-producto',
@@ -8,11 +11,18 @@ import { Component } from '@angular/core';
   styleUrl: './producto.css'
 })
 export class Producto {
-  // Aqui aparece la lista de productos que luego vendrá del backend
-  listaProductos = [
-    { id: 1, nombre: 'Producto Aleatorio A', precio: 28, textoImg: 'imagen de producto 1' },
-    { id: 2, nombre: 'Producto Aleatorio B', precio: 28000, textoImg: 'imagen de producto 2' },
-    { id: 3, nombre: 'Producto Aleatorio C', precio: 2800,  textoImg: 'imagen de producto 3' },
-    { id: 4, nombre: 'Producto Aleatorio D', precio: 280, textoImg: 'imagen de producto 4' }
-  ];
+  private readonly productoStore = inject(ProductoStore);
+  private readonly categoriaStore = inject(CategoriaProductoStore);
+
+  readonly productos = this.productoStore.productos;
+  readonly loading = this.productoStore.loading;
+  readonly error = this.productoStore.error;
+  readonly categorias = this.categoriaStore.categorias;
+  readonly placeholderImage =
+    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%23f0f2f5"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%238a94a6" font-family="Arial" font-size="18">Sin imagen</text></svg>';
+
+  constructor() {
+    this.productoStore.loadProductos();
+    this.categoriaStore.loadCategorias();
+  }
 }
