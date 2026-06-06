@@ -12,6 +12,7 @@ export class ProductoStore {
   readonly productos = signal<Producto[]>([]);
   readonly loading = signal<boolean>(false);
   readonly error = signal<string | null>(null);
+  readonly categoriaSeleccionada = signal<number | undefined>(undefined);
 
   loadProductos(idCategoria?: number): void {
     this.loading.set(true);
@@ -30,5 +31,10 @@ export class ProductoStore {
           this.loading.set(false);
         }
       });
+  }
+
+  filtrarPorCategoria(idCategoria?: number): void {
+    this.categoriaSeleccionada.set(idCategoria);
+    this.loadProductos(idCategoria);
   }
 }

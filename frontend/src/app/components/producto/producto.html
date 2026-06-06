@@ -6,6 +6,10 @@
   <p class="status-text error">{{ error() }}</p>
 }
 
+@if (noHayProductos()) {
+  <p class="status-text no-products">No hay productos disponibles en esta categoría.</p>
+}
+
 <div class="cards-container">
   @for (item of productos(); track item.idProducto) {
     <article class="product-card">

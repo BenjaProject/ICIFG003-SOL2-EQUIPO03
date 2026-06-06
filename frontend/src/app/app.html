@@ -12,8 +12,24 @@
 <main class="main-layout">
   <section class="catalog-section">
     <h2>Catálogo de Productos</h2>
+    
+    <div class="filter-container">
+      <label for="categoria-filter">Filtrar por categoría:</label>
+      <select 
+        id="categoria-filter" 
+        class="categoria-select"
+        [value]="categoriaSeleccionada() || ''"
+        (change)="onCategoriaChange($event)"
+      >
+        <option value="">Todos</option>
+        @for (cat of categorias(); track cat.idCategoria) {
+          <option [value]="cat.idCategoria">{{ cat.nombreCategoria }}</option>
+        }
+      </select>
+    </div>
+
     <div class="products-grid">
-      <app-producto></app-producto>
+      <app-producto #productoComponent></app-producto>
     </div>
   </section>
 
