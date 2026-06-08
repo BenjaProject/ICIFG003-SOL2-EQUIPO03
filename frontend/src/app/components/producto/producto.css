@@ -89,6 +89,30 @@
   border-radius: 4px;
 }
 
+/* Estilos diferenciadores para Productos Destacados (más limpios y sutiles) */
+.product-card.destacado-card {
+  position: relative;
+  border: 1.5px solid #f39c12; /* Borde dorado sólido y fino */
+  background-color: #fffdf9; /* Fondo sutilmente cálido */
+}
+
+/* Etiqueta flotante sencilla "Destacado" */
+.destacado-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #f39c12;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  z-index: 5;
+}
+
 @media (min-width: 768px) and (max-width: 1023px) {
   .product-card {
     flex: 1 1 calc(50% - 20px);
