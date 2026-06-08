@@ -1,3 +1,17 @@
+<div class="cart-summary-bar">
+  <div class="cart-info-item">
+    <span>Carrito de compras:</span>
+    <strong class="cart-count">{{ cantidadCarrito() }} productos</strong>
+  </div>
+  <div class="cart-info-item">
+    <span>Total acumulado:</span>
+    <strong class="total-destacado">${{ totalPrecio() }}</strong>
+  </div>
+  @if (cantidadCarrito() > 0) {
+    <button class="btn-vaciar" (click)="vaciarCarrito()">Vaciar carrito</button>
+  }
+</div>
+
 @if (loading()) {
   <p class="status-text">Cargando catalogo...</p>
 }
@@ -11,7 +25,6 @@
 }
 
 @if (categoriaSeleccionada() !== undefined) {
-  <!-- Vista filtrada: sin etiquetas de secciones, todos los productos en una sola grilla -->
   <div class="cards-container">
     @for (item of productos(); track item.idProducto) {
       <article class="product-card">
@@ -25,17 +38,16 @@
           <h3>{{ item.nombreProducto }}</h3>
           <p class="category">{{ item.categoria?.nombreCategoria }}</p>
           <p class="price">${{ item.precio }}</p>
-          <button class="btn-add">Agregar al carrito</button>
+          <button class="btn-add" (click)="agregarAlCarrito(item)">Agregar al carrito</button>
         </div>
       </article>
     }
   </div>
 } @else {
-  <!-- Vista general (sin filtro): separado en Destacados y General -->
-  <h2 class="section-title">⭐ Productos Destacados ✨</h2>
+  <h2 class="section-title">Productos Destacados</h2>
   <div class="cards-container">
     @for (item of productos(); track item.idProducto) {
-      @if (item.precio < 10000) {
+      @if (item.precio >= 10000) {
         <article class="product-card destacado-card">
           <span class="destacado-badge">Destacado</span>
           <img
@@ -48,30 +60,32 @@
             <h3>{{ item.nombreProducto }}</h3>
             <p class="category">{{ item.categoria?.nombreCategoria }}</p>
             <p class="price">${{ item.precio }}</p>
-            <button class="btn-add">Agregar al carrito</button>
+            <button class="btn-add" (click)="agregarAlCarrito(item)">Agregar al carrito</button>
           </div>
         </article>
       }
     }
   </div>
 
-  <h2 class="section-title">🛒 Catálogo General</h2>
+  <h2 class="section-title">Catálogo General</h2>
   <div class="cards-container">
     @for (item of productos(); track item.idProducto) {
-      <article class="product-card">
-        <img
-          class="product-image"
-          [src]="item.imagenUrl || placeholderImage"
-          [alt]="item.nombreProducto"
-          loading="lazy"
-        />
-        <div class="product-info">
-          <h3>{{ item.nombreProducto }}</h3>
-          <p class="category">{{ item.categoria?.nombreCategoria }}</p>
-          <p class="price">${{ item.precio }}</p>
-          <button class="btn-add">Agregar al carrito</button>
-        </div>
-      </article>
+      @if (item.precio < 10000) {
+        <article class="product-card">
+          <img
+            class="product-image"
+            [src]="item.imagenUrl || placeholderImage"
+            [alt]="item.nombreProducto"
+            loading="lazy"
+          />
+          <div class="product-info">
+            <h3>{{ item.nombreProducto }}</h3>
+            <p class="category">{{ item.categoria?.nombreCategoria }}</p>
+            <p class="price">${{ item.precio }}</p>
+            <button class="btn-add" (click)="agregarAlCarrito(item)">Agregar al carrito</button>
+          </div>
+        </article>
+      }
     }
   </div>
 }

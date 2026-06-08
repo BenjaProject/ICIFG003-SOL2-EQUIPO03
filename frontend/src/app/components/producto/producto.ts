@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 
 import { CategoriaProductoStore } from '../../services/categoria-producto.store';
 import { ProductoStore } from '../../services/producto.store';
@@ -25,6 +25,15 @@ export class Producto {
   readonly placeholderImage =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%23f0f2f5"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%238a94a6" font-family="Arial" font-size="18">Sin imagen</text></svg>';
 
+  //Logica reactiva del carrtito
+  readonly listaCarrito = signal<any[]>([]);
+
+  readonly cantidadCarrito = computed(() => this.listaCarrito().length);
+
+  readonly totalPrecio = computed(() => {
+    return this.listaCarrito().reduce((acc, item) => acc + item.precio, 0);
+  });
+
   constructor() {
     this.productoStore.loadProductos();
     this.categoriaStore.loadCategorias();
@@ -32,5 +41,13 @@ export class Producto {
 
   filtrarPorCategoria(idCategoria?: number): void {
     this.productoStore.filtrarPorCategoria(idCategoria);
+  }
+
+  agregarAlCarrito(prod: any): void {
+    this.listaCarrito.update(items => [...items, prod]);
+  }
+
+  vaciarCarrito(): void {
+    this.listaCarrito.set([]);
   }
 }
