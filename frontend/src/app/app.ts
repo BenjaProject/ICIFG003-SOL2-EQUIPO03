@@ -4,13 +4,14 @@ import { RouterOutlet } from '@angular/router';
 import { Menu } from './components/menu/menu';
 import { Producto } from './components/producto/producto';
 import { Mensaje } from './components/mensaje/mensaje';
+import { Contacto } from './components/contacto/contacto';
 import { ProductoStore } from './services/producto.store';
 import { CategoriaProductoStore } from './services/categoria-producto.store';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Menu, Producto, Mensaje],
+  imports: [RouterOutlet, Menu, Producto, Mensaje, Contacto],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
