@@ -60,7 +60,7 @@ Este proyecto es una aplicación web e-commerce completa para una tienda de masc
    ```
 3. Levanta el servidor de desarrollo local de Angular:
    ```bash
-   npm run start
+   ng serve
    ```
 4. Abre tu navegador en [http://localhost:4200](http://localhost:4200).
 
