@@ -39,7 +39,7 @@ Este proyecto es una aplicación web e-commerce completa para una tienda de masc
    spring.datasource.password=tu_contraseña
    ```
 3. Ejecuta el backend utilizando el Maven Wrapper. Desde la raíz de la carpeta `/backend`, ejecuta:
-   * **En Windows (CMD/PowerShell):**
+   * **En Windows (PowerShell):**
      ```powershell
      ./mvnw.cmd spring-boot:run
      ```
