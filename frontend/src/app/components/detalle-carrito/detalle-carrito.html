@@ -1,0 +1,76 @@
+<main class="carrito-main">
+  <section class="carrito-section">
+    <h2>Resumen de tu Compra</h2>
+
+    <div *ngIf="cargando" class="txt-cargando">
+      <p>Sincronizando cesta con PetShop Online...</p>
+    </div>
+
+    <div *ngIf="!cargando">
+      <div *ngIf="carrito && carrito.items && carrito.items.length > 0; else carritoVacioTemplate">
+        <article class="table-container">
+          <table class="carrito-table">
+            <thead>
+              <tr>
+                <th>Imagen</th>
+                <th>Producto</th>
+                <th>Precio Unitario</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of carrito.items">
+                <td data-label="Imagen">
+                  <img [src]="item.producto.imagenUrl || 'assets/no-image.png'" [alt]="item.producto.nombreProducto" class="img-item">
+                </td>
+                <td data-label="Producto" class="nombre-item">
+                  <strong>{{ item.producto.nombreProducto }}</strong>
+                </td>
+                <td data-label="Precio Unitario">${{ item.precioUnitario | number:'1.0-0' }}</td>
+                <td data-label="Cantidad">
+                  <span class="badge-cantidad">{{ item.cantidad }}</span>
+                </td>
+                <td data-label="Subtotal" class="subtotal-item">
+                  ${{ (item.precioUnitario * item.cantidad) | number:'1.0-0' }}
+                </td>
+                <td data-label="Acción">
+                  <button (click)="eliminarItem(item.producto.idProducto)" class="btn-eliminar-item" title="Quitar producto">
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+
+        <div class="carrito-footer-panel">
+          <div class="panel-botones">
+            <button routerLink="/" class="btn-volver">
+              Seguir Comprando
+            </button>
+            <button (click)="vaciarCarritoCompleto()" class="btn-vaciar-todo">
+              Vaciar Carrito
+            </button>
+          </div>
+          
+          <div class="panel-total">
+            <span class="lbl-total">Total General:</span>
+            <span class="val-total">${{ (carrito.totalAcumulado || 0) | number:'1.0-0' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #carritoVacioTemplate>
+        <article class="carrito-vacio-box">
+          <h3>Tu carrito está vacío</h3>
+          <p>No has añadido ningún artículo a tu cesta de compras de PetShop Online todavía.</p>
+          <button routerLink="/" class="btn-retorno-catalogo">
+            Explorar Productos
+          </button>
+        </article>
+      </ng-template>
+    </div>
+  </section>
+</main>
