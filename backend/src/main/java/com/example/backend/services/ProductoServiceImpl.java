@@ -17,9 +17,9 @@ public class ProductoServiceImpl implements ProductoService{
     public List<Producto> findAll(Long idCategoria) {
 
         if (idCategoria != null) {
-            return productoRepository.findByCategoriaIdCategoria(idCategoria);
+            return productoRepository.findByCategoriaIdCategoriaOrderByIdProductoAsc(idCategoria);
         }
-        return productoRepository.findAll();
+        return productoRepository.findAllByOrderByIdProductoAsc();
     }
 
     @Override

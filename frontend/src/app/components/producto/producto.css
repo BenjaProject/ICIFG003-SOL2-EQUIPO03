@@ -188,3 +188,42 @@
     text-align: center;
   }
 }
+
+/* Toast Notification Feedback */
+.toast-notification {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: rgba(39, 174, 96, 0.95); /* Verde translúcido premium */
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 9999;
+  animation: slideInToast 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast-icon {
+  font-size: 1.2rem;
+}
+
+.toast-text {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+@keyframes slideInToast {
+  0% {
+    transform: translateY(100px) scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}

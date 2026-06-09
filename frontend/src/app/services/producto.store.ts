@@ -23,7 +23,8 @@ export class ProductoStore {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (productos) => {
-          this.productos.set(productos ?? []);
+          const sorted = (productos ?? []).sort((a, b) => a.idProducto - b.idProducto);
+          this.productos.set(sorted);
           this.loading.set(false);
         },
         error: () => {

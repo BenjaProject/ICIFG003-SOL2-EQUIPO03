@@ -69,6 +69,8 @@ export class Producto {
         this.carrito.set(car);
         // Recargar productos para refrescar el stock en pantalla
         this.productoStore.loadProductos(this.categoriaSeleccionada());
+        // Feedback visual
+        this.mostrarFeedback(`¡"${prod.nombreProducto}" agregado al carrito con éxito!`);
       },
       error: (err) => {
         console.error('Error al agregar al carrito:', err);
@@ -78,14 +80,28 @@ export class Producto {
     });
   }
 
+  readonly toastMessage = signal<string | null>(null);
+
+  mostrarFeedback(mensaje: string): void {
+    this.toastMessage.set(mensaje);
+    setTimeout(() => {
+      if (this.toastMessage() === mensaje) {
+        this.toastMessage.set(null);
+      }
+    }, 3000);
+  }
+
   vaciarCarrito(): void {
-    this.carritoService.vaciarCarrito().subscribe({
-      next: (car) => {
-        this.carrito.set(car);
-        // Recargar productos para refrescar el stock en pantalla
-        this.productoStore.loadProductos(this.categoriaSeleccionada());
-      },
-      error: (err) => console.error('Error al vaciar carrito:', err)
-    });
+    if (confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
+      this.carritoService.vaciarCarrito().subscribe({
+        next: (car) => {
+          this.carrito.set(car);
+          // Recargar productos para refrescar el stock en pantalla
+          this.productoStore.loadProductos(this.categoriaSeleccionada());
+          alert('¡El carrito ha sido vaciado con éxito! 🐾');
+        },
+        error: (err) => console.error('Error al vaciar carrito:', err)
+      });
+    }
   }
 }

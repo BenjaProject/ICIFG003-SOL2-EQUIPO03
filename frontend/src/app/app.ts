@@ -35,6 +35,10 @@ export class AppComponent {
   // NOTA: Dejamos el ViewChild por si acaso, aunque ya no se usará para la promo
   @ViewChild('productoComponent') productoComponent!: Producto;
 
+  constructor() {
+    this.productoStore.loadProductos();
+  }
+
   onCategoriaChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
     const idCategoria = target.value ? parseInt(target.value, 10) : undefined;

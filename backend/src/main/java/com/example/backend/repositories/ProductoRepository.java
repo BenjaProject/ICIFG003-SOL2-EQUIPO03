@@ -9,5 +9,6 @@ import com.example.backend.models.Producto;
 
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
-    List<Producto> findByCategoriaIdCategoria(Long idCategoria);
+    List<Producto> findByCategoriaIdCategoriaOrderByIdProductoAsc(Long idCategoria);
+    List<Producto> findAllByOrderByIdProductoAsc();
 }

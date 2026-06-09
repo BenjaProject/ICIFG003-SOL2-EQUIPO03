@@ -50,12 +50,15 @@ export class DetalleCarritoComponent implements OnInit {
   }
 
   vaciarCarritoCompleto(): void {
-    this.carritoService.vaciarCarrito().subscribe({
-      next: (carritoVacio) => {
-        this.carrito = carritoVacio;
-        this.cdr.detectChanges(); // <-- Actualiza la interfaz inmediatamente al vaciar
-      },
-      error: (err) => console.error('Error al vaciar la cesta:', err)
-    });
+    if (confirm('¿Estás seguro de que deseas vaciar el carrito?')) {
+      this.carritoService.vaciarCarrito().subscribe({
+        next: (carritoVacio) => {
+          this.carrito = carritoVacio;
+          this.cdr.detectChanges(); // <-- Actualiza la interfaz inmediatamente al vaciar
+          alert('¡El carrito ha sido vaciado con éxito! 🐾');
+        },
+        error: (err) => console.error('Error al vaciar la cesta:', err)
+      });
+    }
   }
 }

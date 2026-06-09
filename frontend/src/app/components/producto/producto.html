@@ -91,3 +91,10 @@
     }
   </div>
 }
+
+@if (toastMessage()) {
+  <div class="toast-notification">
+    <span class="toast-icon"></span>
+    <p class="toast-text">{{ toastMessage() }}</p>
+  </div>
+}
