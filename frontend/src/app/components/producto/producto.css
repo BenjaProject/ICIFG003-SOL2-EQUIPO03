@@ -53,6 +53,13 @@
   margin: 0 0 15px 0;
 }
 
+.stock {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  margin: 0 0 12px 0;
+  font-weight: 500;
+}
+
 /*Botón de añadir al carrito*/
 .btn-add {
   background-color: #34495e;
