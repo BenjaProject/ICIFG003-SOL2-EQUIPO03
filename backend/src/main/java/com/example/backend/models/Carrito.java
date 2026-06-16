@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Table(name = "carrito")
@@ -29,6 +30,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
+@Slf4j
 public class Carrito {
 
     @Id
@@ -49,6 +51,7 @@ public class Carrito {
         if (this.items == null || this.items.isEmpty()) {
             return BigDecimal.ZERO;
         }
+        log.info("Calculando total acumulado para carrito id: {} con {} items", this.idCarrito, this.items.size());
     
     // Suma el (precioUnitario * cantidad) de cada detalle en la lista
         return this.items.stream()
