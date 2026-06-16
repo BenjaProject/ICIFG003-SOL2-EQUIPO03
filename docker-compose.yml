@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # 1. Base de datos (PostgreSQL)
+  db:
+    image: postgres:15-alpine # Versión ligera de Postgres
+    container_name: postgres-database
+    environment:
+      POSTGRES_DB: petshop_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  # 2. Backend (Spring Boot)
+  backend:
+    build: 
+      context: ./backend
+    container_name: api-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      # Configuraciones inyectadas hacia Spring Boot
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/petshop_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+
+  # 3. Frontend (Angular)
+  frontend:
+    build: 
+      context: ./frontend
+    container_name: web-frontend
+    ports:
+      - "4200:80"  # Tu frontend en localhost:4200
+    depends_on:
+      - backend
+
+volumes:
+  # Volumen para que la BD no pierda datos si se apaga el contenedor
+  db_data:
