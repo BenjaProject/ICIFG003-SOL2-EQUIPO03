@@ -1,5 +1,5 @@
 # Etapa 1: Compilación con Node.js
-FROM node:18-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
@@ -8,6 +8,6 @@ RUN npm run build --configuration=production
 
 # Etapa 2: Servidor Web
 FROM nginx:alpine
-# RECUERDA: Cambia "nombre-proyecto" por el nombre real en tu angular.json
-COPY --from=build /app/dist/nombre-proyecto/browser /usr/share/nginx/html
+COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
