@@ -66,5 +66,11 @@ public class CarritoController {
     public ResponseEntity<Carrito> vaciarCarrito() {
         Carrito carritoVacio = carritoService.vaciarCarrito();
         return ResponseEntity.ok(carritoVacio);
-}
+    }
+
+    @PostMapping("/comprar")
+    public ResponseEntity<Carrito> comprar() {
+        Carrito nuevoCarrito = carritoService.comprarCarrito();
+        return ResponseEntity.ok(nuevoCarrito);
+    }
 }

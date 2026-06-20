@@ -43,6 +43,10 @@ public class Carrito {
     @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 
+    @Column(name = "comprado", nullable = false, columnDefinition = "boolean default false")
+    @Builder.Default
+    private Boolean comprado = false;
+
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // Evita la recursión infinita (Maneja el JSON hacia abajo)
     private List<DetalleCarrito> items;

@@ -2,12 +2,17 @@
   <section class="carrito-section">
     <h2>Resumen de tu Compra</h2>
 
-    <div *ngIf="cargando" class="txt-cargando">
+    <div *ngIf="cargando()" class="txt-cargando">
       <p>Sincronizando cesta con PetShop Online...</p>
     </div>
 
-    <div *ngIf="!cargando">
-      <div *ngIf="carrito && carrito.items && carrito.items.length > 0; else carritoVacioTemplate">
+    <div *ngIf="error()" class="error-banner">
+      <p>⚠️ {{ error() }}</p>
+      <button (click)="obtenerDatosDelCarrito()" class="btn-reintentar">Reintentar</button>
+    </div>
+
+    <div *ngIf="!cargando() && !error()">
+      <div *ngIf="carrito() && carrito()?.items && carrito()!.items.length > 0; else carritoVacioTemplate">
         <article class="table-container">
           <table class="carrito-table">
             <thead>
@@ -21,7 +26,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of carrito.items">
+              <tr *ngFor="let item of carrito()!.items">
                 <td data-label="Imagen">
                   <img [src]="item.producto.imagenUrl || 'assets/no-image.png'" [alt]="item.producto.nombreProducto" class="img-item">
                 </td>
@@ -53,11 +58,14 @@
             <button (click)="vaciarCarritoCompleto()" class="btn-vaciar-todo">
               Vaciar Carrito
             </button>
+            <button (click)="realizarCompra()" class="btn-comprar">
+              Realizar Compra 🐾
+            </button>
           </div>
           
           <div class="panel-total">
             <span class="lbl-total">Total General:</span>
-            <span class="val-total">${{ (carrito.totalAcumulado || 0) | number:'1.0-0' }}</span>
+            <span class="val-total">${{ (carrito()?.totalAcumulado || 0) | number:'1.0-0' }}</span>
           </div>
         </div>
       </div>

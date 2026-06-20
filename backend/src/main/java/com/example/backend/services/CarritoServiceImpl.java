@@ -60,7 +60,7 @@ public class CarritoServiceImpl implements CarritoService {
     @Override
     @Transactional
     public Carrito obtenerCarritoActivo() {
-        return carritoRepository.findByClienteIdCliente(1L)
+        return carritoRepository.findByClienteIdClienteAndCompradoFalse(1L)
                 .orElseGet(() -> {
                     Cliente cliente = clienteRepository.findById(1L)
                             .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: 1"));
@@ -68,6 +68,7 @@ public class CarritoServiceImpl implements CarritoService {
                             .fechaCreacion(LocalDate.now())
                             .cliente(cliente)
                             .items(new ArrayList<>())
+                            .comprado(false)
                             .build();
                     return carritoRepository.save(nuevoCarrito);
                 });
@@ -149,5 +150,30 @@ public class CarritoServiceImpl implements CarritoService {
         detalleCarritoRepository.deleteAll(carrito.getItems());
         carrito.getItems().clear();
         return carritoRepository.save(carrito);
+    }
+
+    @Override
+    @Transactional
+    public Carrito comprarCarrito() {
+        Carrito carrito = obtenerCarritoActivo();
+        if (carrito.getItems() == null || carrito.getItems().isEmpty()) {
+            throw new IllegalArgumentException("No se puede realizar una compra con el carrito vacío.");
+        }
+
+        // Marcamos el carrito actual como comprado
+        carrito.setComprado(true);
+        carritoRepository.save(carrito);
+
+        // Creamos y retornamos un nuevo carrito activo y vacío para el cliente genérico
+        Cliente cliente = clienteRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: 1"));
+        Carrito nuevoCarrito = Carrito.builder()
+                .fechaCreacion(LocalDate.now())
+                .cliente(cliente)
+                .items(new ArrayList<>())
+                .comprado(false)
+                .build();
+
+        return carritoRepository.save(nuevoCarrito);
     }
 }

@@ -12,4 +12,5 @@ public interface CarritoService {
     Carrito agregarProducto(Long idProducto, Integer cantidad);
     Carrito eliminarProducto(Long idProducto);
     Carrito vaciarCarrito();
+    Carrito comprarCarrito();
 }

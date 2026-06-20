@@ -27,4 +27,8 @@ export class CarritoService {
   vaciarCarrito(): Observable<Carrito> {
     return this.http.delete<Carrito>(`${this.apiUrl}/vaciar`);
   }
+
+  comprarCarrito(): Observable<Carrito> {
+    return this.http.post<Carrito>(`${this.apiUrl}/comprar`, null);
+  }
 }
