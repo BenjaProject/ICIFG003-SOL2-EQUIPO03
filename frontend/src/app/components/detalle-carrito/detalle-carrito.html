@@ -2,12 +2,17 @@
   <section class="carrito-section">
     <h2>Resumen de tu Compra</h2>
 
-    <div *ngIf="cargando" class="txt-cargando">
+    <div *ngIf="cargando()" class="txt-cargando">
       <p>Sincronizando cesta con PetShop Online...</p>
     </div>
 
-    <div *ngIf="!cargando">
-      <div *ngIf="carrito && carrito.items && carrito.items.length > 0; else carritoVacioTemplate">
+    <div *ngIf="error()" class="error-banner">
+      <p>⚠️ {{ error() }}</p>
+      <button (click)="obtenerDatosDelCarrito()" class="btn-reintentar">Reintentar</button>
+    </div>
+
+    <div *ngIf="!cargando() && !error()">
+      <div *ngIf="carrito() && carrito()?.items && carrito()!.items.length > 0; else carritoVacioTemplate">
         <article class="table-container">
           <table class="carrito-table">
             <thead>
@@ -21,7 +26,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of carrito.items">
+              <tr *ngFor="let item of carrito()!.items">
                 <td data-label="Imagen">
                   <img [src]="item.producto.imagenUrl || 'assets/no-image.png'" [alt]="item.producto.nombreProducto" class="img-item">
                 </td>
@@ -30,14 +35,23 @@
                 </td>
                 <td data-label="Precio Unitario">${{ item.precioUnitario | number:'1.0-0' }}</td>
                 <td data-label="Cantidad">
-                  <span class="badge-cantidad">{{ item.cantidad }}</span>
+                  <div class="cantidad-control">
+                    <button (click)="decrementarCantidad(item)" class="btn-cantidad-adj" title="Restar 1">-</button>
+                    <span class="badge-cantidad">{{ item.cantidad }}</span>
+                    <button (click)="incrementarCantidad(item)" class="btn-cantidad-adj" title="Sumar 1">+</button>
+                  </div>
                 </td>
                 <td data-label="Subtotal" class="subtotal-item">
                   ${{ (item.precioUnitario * item.cantidad) | number:'1.0-0' }}
                 </td>
                 <td data-label="Acción">
                   <button (click)="eliminarItem(item.producto.idProducto)" class="btn-eliminar-item" title="Quitar producto">
-                    Eliminar
+                    <svg class="icon-trash" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      <line x1="10" y1="11" x2="10" y2="17"></line>
+                      <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
                   </button>
                 </td>
               </tr>
@@ -48,26 +62,51 @@
         <div class="carrito-footer-panel">
           <div class="panel-botones">
             <button routerLink="/" class="btn-volver">
-              Seguir Comprando
+              <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              <span>Seguir Comprando</span>
             </button>
             <button (click)="vaciarCarritoCompleto()" class="btn-vaciar-todo">
-              Vaciar Carrito
+              <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Vaciar Carrito</span>
+            </button>
+            <button (click)="realizarCompra()" class="btn-comprar">
+              <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <span>Realizar Compra</span>
             </button>
           </div>
           
           <div class="panel-total">
             <span class="lbl-total">Total General:</span>
-            <span class="val-total">${{ (carrito.totalAcumulado || 0) | number:'1.0-0' }}</span>
+            <span class="val-total">${{ (carrito()?.totalAcumulado || 0) | number:'1.0-0' }}</span>
           </div>
         </div>
       </div>
 
       <ng-template #carritoVacioTemplate>
         <article class="carrito-vacio-box">
+          <svg class="vacio-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
           <h3>Tu carrito está vacío</h3>
           <p>No has añadido ningún artículo a tu cesta de compras de PetShop Online todavía.</p>
           <button routerLink="/" class="btn-retorno-catalogo">
-            Explorar Productos
+            <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+            <span>Explorar Productos</span>
           </button>
         </article>
       </ng-template>

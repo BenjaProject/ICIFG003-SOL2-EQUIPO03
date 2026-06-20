@@ -16,12 +16,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Table(name = "carrito")
@@ -29,6 +31,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
+@Slf4j
 public class Carrito {
 
     @Id
@@ -41,7 +44,12 @@ public class Carrito {
     @JoinColumn(name = "id_cliente", nullable = false)
     private Cliente cliente;
 
+    @Column(name = "comprado", nullable = false, columnDefinition = "boolean default false")
+    @Builder.Default
+    private Boolean comprado = false;
+
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("idDetalleCarrito ASC")
     @JsonManagedReference // Evita la recursión infinita (Maneja el JSON hacia abajo)
     private List<DetalleCarrito> items;
     @Transient
@@ -49,6 +57,7 @@ public class Carrito {
         if (this.items == null || this.items.isEmpty()) {
             return BigDecimal.ZERO;
         }
+        log.info("Calculando total acumulado para carrito id: {} con {} items", this.idCarrito, this.items.size());
     
     // Suma el (precioUnitario * cantidad) de cada detalle en la lista
         return this.items.stream()

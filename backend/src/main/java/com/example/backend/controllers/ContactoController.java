@@ -2,6 +2,9 @@ package com.example.backend.controllers;
 
 import com.example.backend.models.Contacto;
 import com.example.backend.services.ContactoService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,7 @@ public class ContactoController {
 
     @Autowired
     private ContactoService contactoService;
+    private Logger logger = LoggerFactory.getLogger(ContactoController.class);
 
     @GetMapping
     public ResponseEntity<List<Contacto>> listar() {
@@ -29,6 +33,7 @@ public class ContactoController {
 
     @PostMapping
     public ResponseEntity<Contacto> crear(@RequestBody Contacto contacto) {
+        logger.info("Recibiendo solicitud para crear contacto: {}", contacto);
         return new ResponseEntity<>(contactoService.guardar(contacto), HttpStatus.CREATED);
     }
 

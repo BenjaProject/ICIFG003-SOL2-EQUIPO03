@@ -34,13 +34,14 @@ public class CarritoServiceImpl implements CarritoService {
     @Override
     @Transactional(readOnly = true)
     public Carrito buscarPorId(Long id) {
-        return carritoRepository.findById(id)
+        Carrito carrito = carritoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Carrito no encontrado con ID: " + id));
+        return ordenarItemsYRetornar(carrito);
     }
     @Override
     @Transactional
     public Carrito guardar(Carrito carrito) {
-        return carritoRepository.save(carrito);
+        return ordenarItemsYRetornar(carritoRepository.save(carrito));
     }
     @Override
     @Transactional
@@ -48,7 +49,7 @@ public class CarritoServiceImpl implements CarritoService {
         Carrito existente = buscarPorId(id);
         existente.setFechaCreacion(carrito.getFechaCreacion());
         existente.setCliente(carrito.getCliente());
-        return carritoRepository.save(existente);
+        return ordenarItemsYRetornar(carritoRepository.save(existente));
     }
     @Override
     @Transactional
@@ -60,7 +61,7 @@ public class CarritoServiceImpl implements CarritoService {
     @Override
     @Transactional
     public Carrito obtenerCarritoActivo() {
-        return carritoRepository.findByClienteIdCliente(1L)
+        Carrito carrito = carritoRepository.findByClienteIdClienteAndCompradoFalse(1L)
                 .orElseGet(() -> {
                     Cliente cliente = clienteRepository.findById(1L)
                             .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: 1"));
@@ -68,9 +69,11 @@ public class CarritoServiceImpl implements CarritoService {
                             .fechaCreacion(LocalDate.now())
                             .cliente(cliente)
                             .items(new ArrayList<>())
+                            .comprado(false)
                             .build();
                     return carritoRepository.save(nuevoCarrito);
                 });
+        return ordenarItemsYRetornar(carrito);
     }
 
     @Override
@@ -115,7 +118,7 @@ public class CarritoServiceImpl implements CarritoService {
             carrito.getItems().add(nuevoDetalle);
         }
 
-        return carrito;
+        return ordenarItemsYRetornar(carrito);
     }
 
     @Override
@@ -134,7 +137,7 @@ public class CarritoServiceImpl implements CarritoService {
         carrito.getItems().remove(detalle);
         detalleCarritoRepository.delete(detalle);
 
-        return carritoRepository.save(carrito);
+        return ordenarItemsYRetornar(carritoRepository.save(carrito));
     }
     
     @Override
@@ -148,6 +151,73 @@ public class CarritoServiceImpl implements CarritoService {
         }
         detalleCarritoRepository.deleteAll(carrito.getItems());
         carrito.getItems().clear();
-        return carritoRepository.save(carrito);
+        return ordenarItemsYRetornar(carritoRepository.save(carrito));
+    }
+
+    @Override
+    @Transactional
+    public Carrito comprarCarrito() {
+        Carrito carrito = obtenerCarritoActivo();
+        if (carrito.getItems() == null || carrito.getItems().isEmpty()) {
+            throw new IllegalArgumentException("No se puede realizar una compra con el carrito vacío.");
+        }
+
+        // Marcamos el carrito actual como comprado
+        carrito.setComprado(true);
+        carritoRepository.save(carrito);
+
+        // Creamos y retornamos un nuevo carrito activo y vacío para el cliente genérico
+        Cliente cliente = clienteRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: 1"));
+        Carrito nuevoCarrito = Carrito.builder()
+                .fechaCreacion(LocalDate.now())
+                .cliente(cliente)
+                .items(new ArrayList<>())
+                .comprado(false)
+                .build();
+
+        return ordenarItemsYRetornar(carritoRepository.save(nuevoCarrito));
+    }
+
+    @Override
+    @Transactional
+    public Carrito restarProducto(Long idProducto, Integer cantidad) {
+        Carrito carrito = obtenerCarritoActivo();
+
+        DetalleCarrito detalle = carrito.getItems().stream()
+                .filter(item -> item.getProducto().getIdProducto().equals(idProducto))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("El producto no está en el carrito"));
+
+        // Devolvemos el stock restado al producto físico
+        Producto producto = detalle.getProducto();
+        producto.setStock(producto.getStock() + cantidad);
+        productoRepository.save(producto);
+
+        if (detalle.getCantidad() <= cantidad) {
+            // Si la cantidad a restar es igual o mayor a la que tenemos, removemos el item
+            carrito.getItems().remove(detalle);
+            detalleCarritoRepository.delete(detalle);
+        } else {
+            // Sino, solo decrementamos la cantidad en el detalle
+            detalle.setCantidad(detalle.getCantidad() - cantidad);
+            detalleCarritoRepository.save(detalle);
+        }
+
+        return ordenarItemsYRetornar(carritoRepository.save(carrito));
+    }
+
+    private Carrito ordenarItemsYRetornar(Carrito carrito) {
+        if (carrito != null && carrito.getItems() != null) {
+            carrito.getItems().sort((a, b) -> {
+                Long idA = a.getIdDetalleCarrito();
+                Long idB = b.getIdDetalleCarrito();
+                if (idA == null && idB == null) return 0;
+                if (idA == null) return 1; // Enviar nuevos items al final
+                if (idB == null) return -1;
+                return idA.compareTo(idB);
+            });
+        }
+        return carrito;
     }
 }

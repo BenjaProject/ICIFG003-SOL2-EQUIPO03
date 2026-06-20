@@ -2,6 +2,9 @@ package com.example.backend.controllers;
 
 import com.example.backend.models.Producto;
 import com.example.backend.repositories.ProductoRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,12 +28,15 @@ public class ProductoController {
     @Autowired
     private ProductoService productoService;
 
+    private Logger logger = LoggerFactory.getLogger(ProductoController.class);
+
     ProductoController(ProductoRepository productoRepository) {
         this.productoRepository = productoRepository;
     }
 
     @GetMapping
     public ResponseEntity<?> getAllProductos(@RequestParam(required = false) Long idCategoria) {
+        logger.info("Recibiendo solicitud para obtener productos con idCategoria: {}", idCategoria);
         return ResponseEntity.ok(productoService.findAll(idCategoria));
     }
 
