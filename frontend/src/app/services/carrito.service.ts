@@ -31,4 +31,11 @@ export class CarritoService {
   comprarCarrito(): Observable<Carrito> {
     return this.http.post<Carrito>(`${this.apiUrl}/comprar`, null);
   }
+
+  restarProducto(idProducto: number, cantidad: number = 1): Observable<Carrito> {
+    let params = new HttpParams()
+      .set('idProducto', idProducto.toString())
+      .set('cantidad', cantidad.toString());
+    return this.http.post<Carrito>(`${this.apiUrl}/restar`, null, { params });
+  }
 }

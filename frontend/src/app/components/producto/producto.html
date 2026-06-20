@@ -12,6 +12,42 @@
   }
 </div>
 
+<!-- Contenedor del Buscador Predictivo -->
+<div class="busqueda-container">
+  <div class="busqueda-wrapper">
+    <div class="busqueda-input-wrapper">
+      <svg class="icono-busqueda" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input 
+        type="text" 
+        class="input-busqueda" 
+        placeholder="Buscar productos por nombre o descripción..."
+        [value]="terminoBusqueda()"
+        (input)="onBuscarInput($event)"
+        (blur)="ocultarSugerencias()"
+        (focus)="terminoBusqueda().length > 0 && mostrarSugerencias.set(true)"
+      />
+    </div>
+    
+    <!-- Listado flotante de sugerencias (Autocomplete) -->
+    @if (mostrarSugerencias() && sugerenciasBusqueda().length > 0) {
+      <ul class="sugerencias-lista">
+        @for (sug of sugerenciasBusqueda(); track sug.idProducto) {
+          <li (click)="seleccionarSugerencia(sug.nombreProducto)">
+            <img [src]="sug.imagenUrl || placeholderImage" alt="" class="sug-img" />
+            <div class="sug-info">
+              <span class="sug-nombre">{{ sug.nombreProducto }}</span>
+              <span class="sug-precio">${{ sug.precio }}</span>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</div>
+
 @if (loading()) {
   <p class="status-text">Cargando catalogo...</p>
 }
@@ -21,12 +57,12 @@
 }
 
 @if (noHayProductos()) {
-  <p class="status-text no-products">No hay productos disponibles en esta categoría.</p>
+  <p class="status-text no-products">No se encontraron productos coincidentes en esta categoría.</p>
 }
 
 @if (categoriaSeleccionada() !== undefined) {
   <div class="cards-container">
-    @for (item of productos(); track item.idProducto) {
+    @for (item of productosFiltrados(); track item.idProducto) {
       <article class="product-card">
         <img
           class="product-image"
@@ -39,16 +75,23 @@
           <p class="category">{{ item.categoria?.nombreCategoria }}</p>
           <p class="price">${{ item.precio }}</p>
           <p class="stock">Stock: {{ item.stock }} un.</p>
-          <button class="btn-add" (click)="agregarAlCarrito(item)">Agregar al carrito</button>
+          <button class="btn-add" (click)="agregarAlCarrito(item)">
+            <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span>Agregar al carrito</span>
+          </button>
         </div>
       </article>
     }
   </div>
 } @else {
   <!-- Vista general (sin filtro): separado en Destacados y General -->
-  <h2 class="section-title">⭐ Productos Destacados ✨</h2>
+  <h2 class="section-title">Productos Destacados</h2>
   <div class="cards-container">
-    @for (item of productos(); track item.idProducto) {
+    @for (item of productosFiltrados(); track item.idProducto) {
       @if (item.precio < 10000) {
         <article class="product-card destacado-card">
           <span class="destacado-badge">⭐ Destacado</span>
@@ -63,16 +106,23 @@
             <p class="category">{{ item.categoria?.nombreCategoria }}</p>
             <p class="price">${{ item.precio }}</p>
             <p class="stock">Stock: {{ item.stock }} un.</p>
-            <button class="btn-add" (click)="agregarAlCarrito(item)">Agregar al carrito</button>
+            <button class="btn-add" (click)="agregarAlCarrito(item)">
+              <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+              <span>Agregar al carrito</span>
+            </button>
           </div>
         </article>
       }
     }
   </div>
 
-  <h2 class="section-title">🛒 Catálogo General</h2>
+  <h2 class="section-title">Catálogo General</h2>
   <div class="cards-container">
-    @for (item of productos(); track item.idProducto) {
+    @for (item of productosFiltrados(); track item.idProducto) {
       <article class="product-card">
         <img
           class="product-image"
@@ -85,7 +135,14 @@
           <p class="category">{{ item.categoria?.nombreCategoria }}</p>
           <p class="price">${{ item.precio }}</p>
           <p class="stock">Stock: {{ item.stock }} un.</p>
-          <button class="btn-add" (click)="agregarAlCarrito(item)">Agregar al carrito</button>
+          <button class="btn-add" (click)="agregarAlCarrito(item)">
+            <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span>Agregar al carrito</span>
+          </button>
         </div>
       </article>
     }

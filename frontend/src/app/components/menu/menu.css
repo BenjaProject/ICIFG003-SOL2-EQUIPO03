@@ -27,3 +27,15 @@
     gap: 10px;
   }
 }
+
+.nav-cart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icono-nav-cart {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+}

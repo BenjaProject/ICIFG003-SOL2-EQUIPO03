@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
@@ -48,6 +49,7 @@ public class Carrito {
     private Boolean comprado = false;
 
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("idDetalleCarrito ASC")
     @JsonManagedReference // Evita la recursión infinita (Maneja el JSON hacia abajo)
     private List<DetalleCarrito> items;
     @Transient

@@ -22,9 +22,33 @@ export class Producto {
   readonly error = this.productoStore.error;
   readonly categorias = this.categoriaStore.categorias;
   readonly categoriaSeleccionada = this.productoStore.categoriaSeleccionada;
+
+  // Signals y Computed para el Buscador Predictivo
+  readonly terminoBusqueda = signal<string>('');
+  readonly mostrarSugerencias = signal<boolean>(false);
+
+  readonly productosFiltrados = computed(() => {
+    const term = this.terminoBusqueda().toLowerCase().trim();
+    const prods = this.productos();
+    if (!term) return prods;
+    return prods.filter(p =>
+      p.nombreProducto.toLowerCase().includes(term) ||
+      (p.descripcion && p.descripcion.toLowerCase().includes(term))
+    );
+  });
+
+  readonly sugerenciasBusqueda = computed(() => {
+    const term = this.terminoBusqueda().toLowerCase().trim();
+    if (!term) return [];
+    return this.productos()
+      .filter(p => p.nombreProducto.toLowerCase().includes(term))
+      .slice(0, 5); // Limitado a 5 sugerencias
+  });
+
   readonly noHayProductos = computed(
-    () => !this.loading() && this.productos().length === 0
+    () => !this.loading() && this.productosFiltrados().length === 0
   );
+
   readonly placeholderImage =
     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="400" height="300" fill="%23f0f2f5"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%238a94a6" font-family="Arial" font-size="18">Sin imagen</text></svg>';
 
@@ -98,10 +122,28 @@ export class Producto {
           this.carrito.set(car);
           // Recargar productos para refrescar el stock en pantalla
           this.productoStore.loadProductos(this.categoriaSeleccionada());
-          alert('¡El carrito ha sido vaciado con éxito! 🐾');
+          alert('El carrito ha sido vaciado con éxito.');
         },
         error: (err) => console.error('Error al vaciar carrito:', err)
       });
     }
+  }
+
+  onBuscarInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.terminoBusqueda.set(value);
+    this.mostrarSugerencias.set(value.length > 0);
+  }
+
+  seleccionarSugerencia(nombre: string): void {
+    this.terminoBusqueda.set(nombre);
+    this.mostrarSugerencias.set(false);
+  }
+
+  ocultarSugerencias(): void {
+    // Retardo sutil de 200ms para permitir el evento click en la sugerencia antes de cerrarla
+    setTimeout(() => {
+      this.mostrarSugerencias.set(false);
+    }, 200);
   }
 }

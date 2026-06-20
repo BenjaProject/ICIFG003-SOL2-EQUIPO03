@@ -13,4 +13,5 @@ public interface CarritoService {
     Carrito eliminarProducto(Long idProducto);
     Carrito vaciarCarrito();
     Carrito comprarCarrito();
+    Carrito restarProducto(Long idProducto, Integer cantidad);
 }
