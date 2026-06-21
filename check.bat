@@ -1,2 +1,2 @@
 @echo off
-docker exec -it postgres-database psql -U postgres -d petshop_db
+docker exec -it mysql-database mysql -u root -p1234 petshop_db

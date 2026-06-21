@@ -1,18 +1,17 @@
 version: '3.8'
 
 services:
-  # 1. Base de datos (PostgreSQL)
+  # 1. Base de datos (MySQL)
   db:
-    image: postgres:15-alpine # Versión ligera de Postgres
-    container_name: postgres-database
+    image: mysql:8.0
+    container_name: mysql-database
     environment:
-      POSTGRES_DB: petshop_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1234
+      MYSQL_DATABASE: petshop_db
+      MYSQL_ROOT_PASSWORD: 1234
     ports:
-      - "5432:5432"
+      - "3307:3306"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/mysql
 
   # 2. Backend (Spring Boot)
   backend:
@@ -25,11 +24,11 @@ services:
       - db
     environment:
       # Configuraciones inyectadas hacia Spring Boot
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/petshop_db
-      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/petshop_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=1234
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQLDialect
 
   # 3. Frontend (Angular)
   frontend:
