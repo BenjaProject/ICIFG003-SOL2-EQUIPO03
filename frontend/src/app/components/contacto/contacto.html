@@ -1,7 +1,7 @@
 <section class="contacto-section">
   <div class="contacto-card">
     <h2 class="contacto-title">Contáctanos</h2>
-    <p class="contacto-subtitle">¿Tienes alguna duda o sugerencia? Déjanos tu mensaje y te responderemos a la brevedad.</p>
+    <p class="contacto-subtitle">¿Tienes alguna duda o sugerencia? Déjanos tu mensaje y te responderemos cuanto antes.</p>
 
     @if (successMessage()) {
       <div class="alert alert-success">
@@ -25,7 +25,7 @@
           class="form-control"
           [class.is-invalid]="submitted() && errors().nombre"
           [ngModel]="nombre()"
-          (ngModelChange)="nombre.set($event)"
+          (ngModelChange)="onInputChange('nombre', $event)"
           placeholder="Ej: Juan Pérez"
         />
         @if (submitted() && errors().nombre) {
@@ -44,7 +44,7 @@
           class="form-control"
           [class.is-invalid]="submitted() && errors().correo"
           [ngModel]="correo()"
-          (ngModelChange)="correo.set($event)"
+          (ngModelChange)="onInputChange('correo', $event)"
           placeholder="Ej: juan.perez@correo.com"
         />
         @if (submitted() && errors().correo) {
@@ -63,7 +63,7 @@
           [class.is-invalid]="submitted() && errors().mensaje"
           rows="5"
           [ngModel]="mensaje()"
-          (ngModelChange)="mensaje.set($event)"
+          (ngModelChange)="onInputChange('mensaje', $event)"
           placeholder="Escribe tu mensaje aquí (mínimo 20 caracteres)..."
         ></textarea>
         @if (submitted() && errors().mensaje) {

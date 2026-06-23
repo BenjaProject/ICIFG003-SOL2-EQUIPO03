@@ -22,6 +22,28 @@ export class Contacto {
   readonly successMessage = signal<string | null>(null);
   readonly errorMessage = signal<string | null>(null);
 
+  // REQ12: (parte 1/¿?) Función para validar de forma dinamica el campo mientras el usuario escribe
+  onInputChange(campo: 'nombre' | 'correo' | 'mensaje', valor: string): void {
+    if (campo === 'nombre') this.nombre.set(valor);
+    if (campo === 'correo') this.correo.set(valor);
+    if (campo === 'mensaje') this.mensaje.set(valor);
+
+    if (this.submitted()) {
+      const currentErrors = { ...this.errors() };
+      
+      if (campo === 'nombre' && valor.trim()) delete currentErrors.nombre;
+      
+      if (campo === 'correo') {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (valor.trim() && emailRegex.test(valor.trim())) delete currentErrors.correo;
+      }
+      
+      if (campo === 'mensaje' && valor.trim().length >= 20) delete currentErrors.mensaje;
+
+      this.errors.set(currentErrors);
+    }
+  }
+
   onSubmit(event: Event): void {
     event.preventDefault();
     this.submitted.set(true);
@@ -30,12 +52,11 @@ export class Contacto {
 
     const validationErrors: { nombre?: string; correo?: string; mensaje?: string } = {};
 
-    // Nombre validation
+    // Validación básica de datos
     if (!this.nombre().trim()) {
       validationErrors.nombre = 'El nombre es obligatorio.';
     }
 
-    // Correo validation
     const emailValue = this.correo().trim();
     if (!emailValue) {
       validationErrors.correo = 'El correo electrónico es obligatorio.';
@@ -46,7 +67,6 @@ export class Contacto {
       }
     }
 
-    // Mensaje validation
     const mensajeValue = this.mensaje().trim();
     if (!mensajeValue) {
       validationErrors.mensaje = 'El mensaje es obligatorio.';
@@ -56,7 +76,6 @@ export class Contacto {
 
     this.errors.set(validationErrors);
 
-    // If there are no errors, proceed with submit
     if (Object.keys(validationErrors).length === 0) {
       this.sending.set(true);
       const data = {
