@@ -46,7 +46,7 @@ export class DetalleCarritoComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al conectar con la API del carrito:', err);
-        this.error.set('No se pudo conectar con el servidor para obtener el carrito.');
+        this.error.set('Servicio temporalmente no disponible. Estamos trabajando para volver pronto.');
         this.cargando.set(false);
       }
     });

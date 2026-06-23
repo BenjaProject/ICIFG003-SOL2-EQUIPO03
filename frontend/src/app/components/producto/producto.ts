@@ -78,6 +78,11 @@ export class Producto {
     });
   }
 
+  reintentarCargar(): void {
+    this.productoStore.loadProductos(this.categoriaSeleccionada());
+    this.cargarCarrito();
+  }
+
   filtrarPorCategoria(idCategoria?: number): void {
     this.productoStore.filtrarPorCategoria(idCategoria);
   }

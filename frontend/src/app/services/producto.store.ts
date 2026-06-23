@@ -28,7 +28,7 @@ export class ProductoStore {
           this.loading.set(false);
         },
         error: () => {
-          this.error.set('No se pudo cargar el catalogo.');
+          this.error.set('Servicio temporalmente no disponible. Estamos trabajando para volver pronto.');
           this.loading.set(false);
         }
       });

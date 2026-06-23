@@ -362,3 +362,40 @@
   color: #e67e22;
   font-weight: 700;
 }
+
+/* Banner de error y Botón de reintento */
+.error-banner {
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-left: 5px solid #ef4444;
+  padding: 16px 20px;
+  border-radius: 6px;
+  color: #991b1b;
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  width: 100%;
+}
+
+.error-banner p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.btn-reintentar {
+  background-color: #ef4444;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-reintentar:hover {
+  background-color: #dc2626;
+}

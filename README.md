@@ -1,83 +1,77 @@
 # PetShop Online USS 🐾
 
-Este proyecto es una aplicación web e-commerce completa para una tienda de mascotas, desarrollada como parte de la evaluación práctica de la asignatura. La solución se compone de un backend robusto en Spring Boot y un frontend reactivo desarrollado en Angular.
+Este proyecto es una aplicación web e-commerce completa para una tienda de mascotas, desarrollada como parte de la evaluación práctica de la asignatura. La solución se compone de un backend robusto en Spring Boot y un frontend reactivo desarrollado en Angular, orquestados localmente con Docker.
 
 ---
 
 ## 🏗️ Arquitectura y Tecnologías
 
 ### Backend
-* **Lenguaje y Framework:** Java 17 con Spring Boot 3.x.
-* **Persistencia:** Spring Data JPA con Hibernate.
-* **Base de Datos:** PostgreSQL.
-* **Seguridad y Control:** Inicialización de datos automática mediante scripts SQL condicionales anti-duplicidad.
+* **Lenguaje y Framework:** Java 17 con Spring Boot 4.x.
+* **Persistencia:** Spring Data JPA con Hibernate (creación de tablas automática mediante `ddl-auto=update`).
+* **Base de Datos:** MySQL 8.0 (migrado de PostgreSQL).
+* **Auditoría & Logging:** Implementación de `@Slf4j` con trazas del sistema dirigidas al archivo local `logs/backend.log`.
+* **Inicialización:** Inicialización de datos automática mediante scripts SQL DML (`data.sql`) adaptados con cláusulas `INSERT IGNORE` y `FROM DUAL` compatibles con MySQL.
 
 ### Frontend
 * **Framework:** Angular 17+ con Standalone Components.
-* **Manejo de Estado:** Angular Signals y Stores reactivos.
-* **Estilos:** CSS3 puro con técnicas de Flexbox y CSS Grid.
-* **Responsive Design:** Soporte completo para Desktop (>1024px), Tablet (768px-1023px) y Móviles (<768px).
+* **Manejo de Estado:** Refactorizado completamente utilizando **Angular Signals** y Stores reactivos.
+* **Estilos y Usabilidad:** CSS3 puro responsivo (Flexbox/Grid), animaciones de elevación hover 3D y reemplazo de emojis/texto por **iconos vectoriales SVG nativos** (papelera, carrito, lupa, etiquetas, etc.).
+* **Buscador Predictivo:** Buscador de autocompletado con sugerencias flotantes y filtrado en tiempo real basado en señales computadas (`productosFiltrados`).
+* **Estabilidad Visual:** Ordenamiento estable por ID de detalle (`idDetalleCarrito ASC`) implementado en backend y frontend para evitar desplazamientos de filas al modificar cantidades.
+
+### Infraestructura (Orquestación DevOps)
+* **Dockerización Local:** Contenedores aislados y vinculados mediante **Docker Compose**:
+  * `mysql-database`: Motor MySQL 8.0 en puerto host **`3307`** (puerto interno `3306`) para evitar conflictos con servidores locales ocupados en el puerto `3306`. Incluye persistencia de datos mediante volúmenes.
+  * `api-backend`: API REST de Spring Boot en puerto **`8080`**.
+  * `web-frontend`: Servidor Nginx en puerto **`4200`** configurado para enrutamiento SPA reactivo (prevención de errores 404 en refrescos F5).
 
 ---
 
-## 🚀 Instrucciones de Configuración y Despliegue
+## 🚀 Despliegue con Docker Compose (Primera vez)
 
 ### Requisitos Previos
-* **Java 17 JDK** o superior.
-* **Node.js** (versión LTS recomendada) y **npm**.
-* **PostgreSQL** instalado y corriendo localmente.
+* **Docker Desktop** instalado y en ejecución en el sistema.
+
+### 1. Levantar la Aplicación Completa
+Abre una terminal (PowerShell, CMD o Git Bash) en la carpeta raíz del proyecto y ejecuta:
+
+```powershell
+docker compose up --build -d
+```
+
+*   `--build` compilará el código fuente Java de la API y empaquetará el frontend de Angular en el servidor Nginx de forma local.
+*   `-d` iniciará los servicios en segundo plano.
+
+### 2. Verificar el Funcionamiento
+Una vez que el proceso finalice, puedes acceder a las siguientes URLs:
+*   **Tienda Web (Frontend):** [http://localhost:4200](http://localhost:4200)
+*   **API REST (Backend):** [http://localhost:8080](http://localhost:8080)
+
+### 3. Inspeccionar la Base de Datos
+Para ingresar de forma rápida a la consola interactiva de MySQL dentro del contenedor, ejecuta el helper batch en la raíz:
+```powershell
+./check.bat
+```
+Una vez dentro, puedes auditar las tablas y productos sembrados mediante:
+```sql
+SELECT id_producto, nombre_producto, precio, stock FROM producto;
+```
 
 ---
 
-### 1. Configuración del Backend
+## 🚦 Estrategia de Ramas y Control de Hitos (Git Flow)
 
-1. Crea una base de datos en PostgreSQL con el nombre `petshop_db`.
-2. Revisa el archivo de propiedades en `/backend/src/main/resources/application.properties` y ajusta las credenciales si es necesario:
-   ```properties
-   spring.datasource.url=jdbc:postgresql://localhost:5432/petshop_db
-   spring.datasource.username=tu_usuario_postgres
-   spring.datasource.password=tu_contraseña
-   ```
-3. Ejecuta el backend utilizando el Maven Wrapper. Desde la raíz de la carpeta `/backend`, ejecuta:
-   * **En Windows (PowerShell):**
-     ```powershell
-     ./mvnw.cmd spring-boot:run
-     ```
-   * **En macOS/Linux:**
-     ```bash
-     ./mvnw spring-boot:run
-     ```
-4. Al arrancar, Spring Boot creará el esquema y ejecutará el script `/backend/src/main/resources/data.sql` para poblar automáticamente los datos del cliente, las categorías y los productos iniciales sin generar duplicados.
+*   **Hito Inicial (Solemne 2):** Resguardado bajo la etiqueta semántica `V1.0.0` para garantizar trazabilidad y posibilitar rollbacks.
+*   **Rama DEV:** Utilizada para el desarrollo diario, implementaciones de características individuales y resolución de bugs rápidos.
+*   **Rama QA:** Entorno de estabilización, pruebas de integración y simulación de fallos. **Esta es la rama final desde donde se debe clonar el proyecto.**
 
 ---
 
-### 2. Configuración del Frontend
+## 🎯 Funcionalidades e Interacciones Persistentes (RF)
 
-1. Dirígete a la carpeta `/frontend`.
-2. Instala las dependencias del proyecto:
-   ```bash
-   npm install
-   ```
-3. Levanta el servidor de desarrollo local de Angular:
-   ```bash
-   ng serve
-   ```
-4. Abre tu navegador en [http://localhost:4200](http://localhost:4200).
-
----
-
-## 🎯 Funcionalidades Implementadas (RF)
-
-* **RF01: Página Principal:** Header con título, menú de navegación dinámico, listado de productos destacados, barra lateral con una oferta destacada y pie de página con contacto.
-* **RF02: Catálogo de Productos:** Despliegue dinámico de tarjetas que muestran la imagen del producto, nombre, categoría, precio, stock disponible y botón para agregar al carrito.
-* **RF03: Filtrado de Productos:** Selector que permite filtrar por "Todos", "Perros", "Gatos" o "Accesorios", redibujando el DOM de forma reactiva e instantánea.
-* **RF04: Carrito de Compras:** Al presionar "Agregar al carrito", se comunica con el backend descontando stock en base de datos. Se incluye una vista dedicada ("Pestaña Carrito") para listar artículos, ver subtotales, eliminar elementos individuales o vaciar el carrito completo, con sincronización de inventario en tiempo real.
-* **RF05: Formulario de Contacto:** Campos con validación interactiva del lado del cliente (campos obligatorios, validación de correo por regex y mensaje mínimo de 20 caracteres con contador en tiempo real) y envío exitoso a la API del backend.
-
----
-
-## ♿ Accesibilidad y Diseño Responsivo
-* Vinculación de etiquetas `<label>` mediante atributos `for`/`id`.
-* Textos alternativos (`[alt]`) en todas las imágenes.
-* Ciclo lógico y navegable mediante tabulación por teclado.
-* Visualización responsiva completa: la grilla principal pasa a una sola columna en pantallas medianas y móviles, las tarjetas ocupan el 100% de la pantalla y el menú de navegación se contrae a una disposición vertical en smartphones.
+*   **RF01 - Catálogo e UI Dinámica:** Interfaz responsiva con elevación hover 3D en las tarjetas de productos, visualización de precios y stock en tiempo real.
+*   **RF02 - Buscador Predictivo (Autocomplete):** Barra de búsqueda con sugerencias interactivas flotantes y filtrado reactivo instantáneo.
+*   **RF03 - Carrito de Compras Persistente:** Controladores inline (`- 1 +`) con validaciones de stock físico. Los cambios persisten en MySQL inmediatamente y el carrito sobrevive a los reinicios de sesión.
+*   **RF04 - Formulario de Contacto:** Campos con validación reactiva del lado del cliente y persistencia de mensajes enviados en el backend.
+*   **RF05 - Resiliencia Ante Caídas (Offline Handling):** Si el backend se detiene, el frontend detecta la desconexión automáticamente mostrando un banner de mantenimiento amigable (*"Servicio temporalmente no disponible. Estamos trabajando para volver pronto."*) y un botón de **"Reintentar"** para reconectarse de manera fluida una vez que el backend se inicie de nuevo.
