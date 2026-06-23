@@ -22,7 +22,7 @@ export class Contacto {
   readonly successMessage = signal<string | null>(null);
   readonly errorMessage = signal<string | null>(null);
 
-  // REQ12: (parte 1/¿?) Función para validar de forma dinamica el campo mientras el usuario escribe
+  // REQ12: (parte 1/¿?) Función para validar dinámicamente el campo mientras el usuario escribe
   onInputChange(campo: 'nombre' | 'correo' | 'mensaje', valor: string): void {
     if (campo === 'nombre') this.nombre.set(valor);
     if (campo === 'correo') this.correo.set(valor);
@@ -52,26 +52,26 @@ export class Contacto {
 
     const validationErrors: { nombre?: string; correo?: string; mensaje?: string } = {};
 
-    // Validación básica de datos
+    // REQ12 Y REQ13: (parte 2/¿?) Validación con mensajes explícitos y adaptativos según el contenido
     if (!this.nombre().trim()) {
-      validationErrors.nombre = 'El nombre es obligatorio.';
+      validationErrors.nombre = 'El nombre completo es requerido para poder identificarte.';
     }
 
     const emailValue = this.correo().trim();
     if (!emailValue) {
-      validationErrors.correo = 'El correo electrónico es obligatorio.';
+      validationErrors.correo = 'El correo electrónico es obligatorio para enviarte una respuesta.';
     } else {
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!emailRegex.test(emailValue)) {
-        validationErrors.correo = 'Por favor, ingresa un correo electrónico válido.';
+        validationErrors.correo = 'El formato del correo no es válido. Ej: usuario@dominio.com';
       }
     }
 
     const mensajeValue = this.mensaje().trim();
     if (!mensajeValue) {
-      validationErrors.mensaje = 'El mensaje es obligatorio.';
+      validationErrors.mensaje = 'El contenido del mensaje no puede estar vacío.';
     } else if (mensajeValue.length < 20) {
-      validationErrors.mensaje = `El mensaje debe tener al menos 20 caracteres (actualmente tiene ${mensajeValue.length}).`;
+      validationErrors.mensaje = `Por favor, explica un poco más tu consulta (mínimo 20 caracteres, actualmente tienes ${mensajeValue.length}).`;
     }
 
     this.errors.set(validationErrors);
