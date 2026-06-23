@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ContactoService } from '../../services/contacto.service';
+import { HttpErrorResponse } from '@angular/common/http'; 
 
 @Component({
   selector: 'app-contacto',
@@ -52,7 +53,7 @@ export class Contacto {
 
     const validationErrors: { nombre?: string; correo?: string; mensaje?: string } = {};
 
-    // REQ12 Y REQ13: (parte 2/¿?) Validación con mensajes explícitos y adaptativos según el contenido
+    // REQ12/REQ13: (parte 2/?) Validación con mensajes explícitos y de uso adaptativo para el usuario
     if (!this.nombre().trim()) {
       validationErrors.nombre = 'El nombre completo es requerido para poder identificarte.';
     }
@@ -94,10 +95,16 @@ export class Contacto {
           this.errors.set({});
           this.sending.set(false);
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           console.error(err);
-          this.errorMessage.set('Ocurrió un error al enviar el mensaje. Por favor, de nuevo más tarde.');
           this.sending.set(false);
+          
+          // REQ11 (parte 3/¿?): MANEJO CON EL BACKEND DETENIDO
+          if (err.status === 0) {
+            this.errorMessage.set(' Error de comunicación: El servidor de soporte (Backend) se encuentra desconectado o bajo mantenimiento. Inténtalo de nuevo cuando el sistema esté en línea.');
+          } else {
+            this.errorMessage.set('Ocurrió un inconveniente procesando tu solicitud en el servidor. Por favor, intenta de nuevo más tarde.');
+          }
         }
       });
     }
