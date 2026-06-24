@@ -1,5 +1,5 @@
 
-#Esta version corresponde a la realizada para la solemne 2, para ver el README y proyecto 3 de la asignatura dirigirse a la rama qa
+# Esta version corresponde a la realizada para la solemne 2, para ver el nuevo README y proyecto 3 de la asignatura dirigirse a la rama qa
 
 # PetShop Online USS 🐾
 
