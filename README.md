@@ -32,9 +32,22 @@ Este proyecto es una aplicación web e-commerce completa para una tienda de masc
 
 ### Requisitos Previos
 * **Docker Desktop** instalado y en ejecución en el sistema.
+* **Git** instalado.
 
-### 1. Levantar la Aplicación Completa
-Abre una terminal (PowerShell, CMD o Git Bash) en la carpeta raíz del proyecto y ejecuta:
+### 1. Clonar la Rama de QA (Estable)
+Dado que la entrega final integrada y estable del proyecto se centraliza en la rama de QA, clona únicamente dicha rama ejecutando:
+
+```bash
+git clone -b qa --single-branch https://github.com/BenjaProject/ICIFG003-SOL2-EQUIPO03.git
+```
+
+Una vez clonado el repositorio, entra al directorio del proyecto:
+```bash
+cd ICIFG003-SOL2-EQUIPO03
+```
+
+### 2. Levantar la Aplicación Completa
+Desde la carpeta raíz del proyecto en tu terminal, ejecuta:
 
 ```powershell
 docker compose up --build -d
@@ -43,12 +56,12 @@ docker compose up --build -d
 *   `--build` compilará el código fuente Java de la API y empaquetará el frontend de Angular en el servidor Nginx de forma local.
 *   `-d` iniciará los servicios en segundo plano.
 
-### 2. Verificar el Funcionamiento
+### 3. Verificar el Funcionamiento
 Una vez que el proceso finalice, puedes acceder a las siguientes URLs:
 *   **Tienda Web (Frontend):** [http://localhost:4200](http://localhost:4200)
 *   **API REST (Backend):** [http://localhost:8080](http://localhost:8080)
 
-### 3. Inspeccionar la Base de Datos
+### 4. Inspeccionar la Base de Datos
 Para ingresar de forma rápida a la consola interactiva de MySQL dentro del contenedor, ejecuta el helper batch en la raíz:
 ```powershell
 ./check.bat
