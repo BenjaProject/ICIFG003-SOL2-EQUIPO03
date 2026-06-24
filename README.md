@@ -1,3 +1,6 @@
+
+#Esta version corresponde a la realizada para la solemne 2, para ver el README y proyecto 3 de la asignatura dirigirse a la rama qa
+
 # PetShop Online USS 🐾
 
 Este proyecto es una aplicación web e-commerce completa para una tienda de mascotas, desarrollada como parte de la evaluación práctica de la asignatura. La solución se compone de un backend robusto en Spring Boot y un frontend reactivo desarrollado en Angular.
